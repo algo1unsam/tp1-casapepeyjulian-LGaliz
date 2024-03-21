@@ -9,32 +9,56 @@ test "Está la casa en orden"{
 	assert.that(casa.estaEnOrden())
 }
 
-//test "Depositar en una cuenta con gastos" {
-//	// Preparo el test
-//	cuentaConGasto.costoOperacion(20)
-//	// Acción
-//	cuentaConGasto.depositar(1000)
-//	// Varificación
-//	assert.equals(980, cuentaConGasto.saldo())
-//}
-//
-//test "La casa hace un gasto sobre la cuenta con gastos" {
-//	cuentaConGasto.costoOperacion(500)
-//	cuentaConGasto.depositar(5000)
-//	assert.equals(4500, cuentaConGasto.saldo())
-//	
-//	casa.usarCuenta(cuentaConGasto)
-//	casa.gastar(1000)
-//	
-//	assert.equals(3500, cuentaConGasto.saldo())
-//}
+test"Hacer que se rompa algo de 1000 pesos de la casa, aumentando el monto de reparación. Verificando que Hacer que se rompa algo de 1000 pesos de la casa, aumentando el monto de reparación. Verificando que Tiene víveres suficientes, Hay que hacer reparaciones, No está en orden"{
+	casa.montoReparacion(1000)
+	//o metodo romper
+	assert.that(casa.tieneViveresSuficientes())
+	assert.that(casa.necesitaReparaciones())
+	assert.notThat(casa.estaEnOrden())
+	
+}
 
-//test "Mantenimiento Full: Si la casa tiene 50% de los víveres, necesita 100 pesos para reparaciones y tiene asociada la cuenta corriente con 1000 pesos de saldo" {
-//	casa.viveres(30)
-//	casa.montoReparacion(100)
-//	casa.mantenimiento(full)
-//	assert.that(casa.tieneViveresSuficientes())
-//	assert.equals(200, cuenta.saldo())
-//	assert.equals(50 + 40, casa.viveres())	
-//}
+test "Depositar en una cuenta con gastos" {
+	// Preparo el test
+	cuentaConGasto.costoOperacion(20)
+	// Acción
+	cuentaConGasto.depositar(1000)
+	// Varificación
+	assert.equals(980, cuentaConGasto.saldo())
+}
+
+test "suponiendo que configuramos la cuenta combinada así: la primaria es la cuenta con gastos con 50 pesos de costo de operación y la secundaria es la cuenta corriente, ya con 500 pesos de saldo"{
+	cuentaConGasto.costoOperacion(50)
+	cuentaCombinada.primaria(cuentaConGasto)
+	cuentaCorriente.saldo(500)
+	cuentaCombinada.secundaria(cuentaCorriente)
+	cuentaCombinada.depositar(100)
+	assert.equals(cuentaCombinada.primaria().saldo(), 50)
+	cuentaCombinada.extraer(200)
+	assert.equals(cuentaCombinada.secundaria().saldo(),300 )
+	assert.equals(cuentaCombinada.saldo(),350 )
+}
+
+test "La casa hace un gasto sobre la cuenta con gastos" {
+	cuentaConGasto.costoOperacion(500)
+	cuentaConGasto.depositar(5000)
+	assert.equals(4500, cuentaConGasto.saldo())
+	casa.asignarCuenta(cuentaConGasto)
+	casa.gastar(1000)
+	assert.equals(3500, cuentaConGasto.saldo())
+}
+
+test "Mantenimiento Full: Si la casa tiene 50% de los víveres, necesita 100 pesos para reparaciones y tiene asociada la cuenta corriente con 1000 pesos de saldo" {
+	casa.viveres(50)
+	casa.montoReparacion(100)
+	casa.tipoMantenimiento(full)
+	cuentaCorriente.saldo(1000)
+	assert.notThat(casa.estaEnOrden())
+	casa.cuenta(cuentaCorriente)
+	assert.that(casa.tieneViveresSuficientes())
+	casa.tipoMantenimiento().mantenimiento(casa)
+	assert.equals(casa.montoReparacion(), 100)
+	assert.equals(800, casa.cuenta().saldo())
+	assert.equals(50 + 40, casa.viveres())	
+}
 
